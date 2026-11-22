@@ -1,4 +1,4 @@
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <style>
 .enter{animation:fade .6s ease-out backwards,slide .9s cubic-bezier(.34,1.56,.64,1) backwards}
 @keyframes fade{from{opacity:0;filter:blur(10px)}}
@@ -19,7 +19,7 @@
 #list div:active{transform:scale(.93);transition-duration:.12s}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
-<body onclick=q.focus() style="margin:0;height:100vh;background:#000;color:#4af;font:18px 'Courier New',monospace;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;box-sizing:border-box;overflow:hidden;touch-action:pan-y">
+<body onclick="q.focus()" style="margin:0;height:100vh;height:100dvh;background:#000;color:#4af;font:18px 'Courier New',monospace;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;padding-top:calc(16px + env(safe-area-inset-top));padding-bottom:calc(16px + env(safe-area-inset-bottom));box-sizing:border-box;overflow:hidden;touch-action:pan-y">
 <div id=bg style="position:fixed;inset:-20px;z-index:-1;background:center/cover;transition:filter .6s ease"></div>
 <input id=f type=file accept=image/* hidden>
 <div id=out style="white-space:pre-wrap;color:#fff;margin-bottom:8px"></div>
@@ -74,7 +74,11 @@ if(text)play(out,"enter");
 const isValidColor=value=>CSS.supports("color",value);
 const normalizeColor=value=>/^[0-9a-f]{3}$|^[0-9a-f]{6}$/i.test(value)?"#"+value:value;
 const openTarget=target=>{
-location=/^https?:/.test(target)?target:"intent://#Intent;package="+target+";end";
+  if(/^https?:/.test(target)){
+    window.open(target, "_system");
+  } else {
+    window.location.href = "intent://#Intent;package=" + target + ";end";
+  }
 };
 const launch=(target,element)=>{
 play(element,"launch");
@@ -249,4 +253,4 @@ renderApps();
 play(promptLine,"enter");
 play(row,"enter",120);
 if(wallpaper)play(bg,"bgin");
-  </script>
+</script>
