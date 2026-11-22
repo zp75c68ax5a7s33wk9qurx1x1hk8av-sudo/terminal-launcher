@@ -150,17 +150,30 @@ return item;
 }));
 renderColors();
 };
+
 f.onchange=()=>{
 const reader=new FileReader;
 reader.onload=()=>{
-wallpaper=reader.result;
-save("w",wallpaper);
-renderWallpaper();
-play(bg,"bgin");
+const img = new Image();
+img.onload = () => {
+  const canvas = document.createElement('canvas');
+  const MAX_WIDTH = 1080;
+  const scale = Math.min(MAX_WIDTH / img.width, 1);
+  canvas.width = img.width * scale;
+  canvas.height = img.height * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  wallpaper = canvas.toDataURL('image/jpeg', 0.7);
+  save("w",wallpaper);
+  renderWallpaper();
+  play(bg,"bgin");
+};
+img.src = reader.result;
 };
 if(f.files[0])reader.readAsDataURL(f.files[0]);
 f.value="";
 };
+
 const runColor=args=>{
 if(args[1]=="reset"&&args.length==2){
 colors={...DEFAULT_COLORS};
@@ -274,4 +287,4 @@ renderApps();
 play(promptLine,"enter");
 play(row,"enter",120);
 if(wallpaper)play(bg,"bgin");
-  </script>
+</script>
