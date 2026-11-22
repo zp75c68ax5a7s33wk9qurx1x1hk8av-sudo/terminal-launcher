@@ -248,9 +248,11 @@ save("d",dim);
 renderWallpaper();
 play(bg,"bgin");
 }else{
-const index = findIndex(v);
+const index=findIndex(v);
 if(apps[index]){
 launch(apps[index].target,list.children[index]);
+} else if (window.AndroidBridge && window.AndroidBridge.openByName) {
+window.AndroidBridge.openByName(v);
 } else {
 launch(v,row);
 }
