@@ -32,6 +32,12 @@
 <script>
 const DEFAULT_COLORS={prompt:"#4af",app:"#fff",text:"#fff"};
 let wallpaper="",blur=4,dim=0.3,apps=[],colors={...DEFAULT_COLORS};
+
+if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.StatusBar) {
+  window.Capacitor.Plugins.StatusBar.hide();
+  window.Capacitor.Plugins.StatusBar.setOverlaysWebView({ overlay: true });
+}
+
 try{
 wallpaper=localStorage.w||"";
 blur=localStorage.b?+localStorage.b:blur;
@@ -73,22 +79,25 @@ if(text)play(out,"enter");
 };
 const isValidColor=value=>CSS.supports("color",value);
 const normalizeColor=value=>/^[0-9a-f]{3}$|^[0-9a-f]{6}$/i.test(value)?"#"+value:value;
+
 const openTarget=async target=>{
   try {
     if(/^https?:/.test(target)){
       window.open(target, "_system");
     } else {
-      const { AppLauncher } = Capacitor.Plugins;
-      if(AppLauncher) {
-        await AppLauncher.openUrl({ url: "intent://#Intent;package=" + target + ";end" });
+      if (window.AndroidBridge && window.AndroidBridge.openApp) {
+        window.AndroidBridge.openApp(target);
+      } else if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AppLauncher) {
+        await window.Capacitor.Plugins.AppLauncher.openUrl({ url: target });
       } else {
         window.location.href = "intent://#Intent;package=" + target + ";end";
       }
     }
   } catch (e) {
-    window.location.href = "intent://#Intent;package=" + target + ";end";
+    console.error(e);
   }
 };
+
 const launch=(target,element)=>{
 play(element,"launch");
 setTimeout(()=>{
@@ -262,4 +271,4 @@ renderApps();
 play(promptLine,"enter");
 play(row,"enter",120);
 if(wallpaper)play(bg,"bgin");
-</script>
+  </script>
