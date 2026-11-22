@@ -73,10 +73,19 @@ if(text)play(out,"enter");
 };
 const isValidColor=value=>CSS.supports("color",value);
 const normalizeColor=value=>/^[0-9a-f]{3}$|^[0-9a-f]{6}$/i.test(value)?"#"+value:value;
-const openTarget=target=>{
-  if(/^https?:/.test(target)){
-    window.open(target, "_system");
-  } else {
+const openTarget=async target=>{
+  try {
+    if(/^https?:/.test(target)){
+      window.open(target, "_system");
+    } else {
+      const { AppLauncher } = Capacitor.Plugins;
+      if(AppLauncher) {
+        await AppLauncher.openUrl({ url: "intent://#Intent;package=" + target + ";end" });
+      } else {
+        window.location.href = "intent://#Intent;package=" + target + ";end";
+      }
+    }
+  } catch (e) {
     window.location.href = "intent://#Intent;package=" + target + ";end";
   }
 };
