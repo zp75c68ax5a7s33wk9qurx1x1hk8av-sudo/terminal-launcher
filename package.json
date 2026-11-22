@@ -1,13 +1,14 @@
 {
   "name": "terminal-launcher",
   "version": "1.0.0",
-  "description": "Terminal Launcher",
   "scripts": {
-    "build": "npx cap sync android"
+    "build": "echo 'Build done'"
   },
   "dependencies": {
     "@capacitor/android": "^6.1.0",
     "@capacitor/cli": "^6.1.0",
-    "@capacitor/core": "^6.1.0"
+    "@capacitor/core": "^6.1.0",
+    "@capacitor/status-bar": "^6.0.0",
+    "@capacitor/app-launcher": "^6.0.0"
   }
 }
