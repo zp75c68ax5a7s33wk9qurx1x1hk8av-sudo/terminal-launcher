@@ -1,0 +1,8 @@
+{
+  "appId": "com.terminal.launcher",
+  "appName": "Terminal Launcher",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
