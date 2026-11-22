@@ -54,6 +54,8 @@ jobs:
           import android.net.Uri;
           import android.webkit.JavascriptInterface;
           import android.webkit.WebView;
+          import android.content.pm.PackageManager;
+          import android.content.pm.ResolveInfo;
 
           public class MainActivity extends BridgeActivity {
               @Override
@@ -84,6 +86,29 @@ jobs:
                                       Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
                                       marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                       startActivity(marketIntent);
+                                  }
+                              } catch (Exception e) {
+                                  e.printStackTrace();
+                              }
+                          });
+                      }
+
+                      @JavascriptInterface
+                      public void openByName(String searchName) {
+                          runOnUiThread(() -> {
+                              try {
+                                  Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+                                  mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+                                  for (ResolveInfo info : getPackageManager().queryIntentActivities(mainIntent, 0)) {
+                                      String appName = info.loadLabel(getPackageManager()).toString().toLowerCase();
+                                      if (appName.contains(searchName.toLowerCase())) {
+                                          Intent launchIntent = getPackageManager().getLaunchIntentForPackage(info.activityInfo.packageName);
+                                          if (launchIntent != null) {
+                                              launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                              startActivity(launchIntent);
+                                              return;
+                                          }
+                                      }
                                   }
                               } catch (Exception e) {
                                   e.printStackTrace();
