@@ -14,13 +14,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -33,6 +33,11 @@ jobs:
 
       - name: Sync web assets
         run: npx cap sync android
+
+      - name: Make app a Launcher (Home Screen)
+        run: |
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          sed -i 's/<category android:name="android.intent.category.LAUNCHER" \/>/<category android:name="android.intent.category.LAUNCHER" \/>\n            <category android:name="android.intent.category.HOME" \/>\n            <category android:name="android.intent.category.DEFAULT" \/>/' $MANIFEST
 
       - name: Build APK
         run: |
