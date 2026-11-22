@@ -35,10 +35,18 @@ jobs:
       - name: Sync web assets
         run: npx cap sync android
 
-      - name: Make app a Launcher (Home Screen)
+      - name: Patch Android Files (Manifest & Full Screen)
         run: |
           MANIFEST="android/app/src/main/AndroidManifest.xml"
-          sed -i 's/<category android:name="android.intent.category.LAUNCHER" \/>/<category android:name="android.intent.category.LAUNCHER" \/>\n            <category android:name="android.intent.category.HOME" \/>\n            <category android:name="android.intent.category.DEFAULT" \/>/' $MANIFEST
+          MAIN_ACTIVITY="android/app/src/main/java/com/terminal/launcher/MainActivity.java"
+          
+          # 1. Cấu hình Manifest: Thêm quyền mở app khác & Làm Launcher (Màn hình chính)
+          sed -i 's|</manifest>|    <queries>\n        <intent>\n            <action android:name="android.intent.action.MAIN" />\n        </intent>\n    </queries>\n</manifest>|' $MANIFEST
+          sed -i 's|<category android:name="android.intent.category.LAUNCHER" />|<category android:name="android.intent.category.LAUNCHER" />\n            <category android:name="android.intent.category.HOME" />\n            <category android:name="android.intent.category.DEFAULT" />|' $MANIFEST
+          sed -i 's|<application|<application android:usesCleartextTraffic="true"|' $MANIFEST
+          
+          # 2. Ép giao diện sang chế độ Toàn màn hình (Ẩn thanh pin, giờ, thông báo)
+          sed -i 's|super.onCreate(savedInstanceState);|super.onCreate(savedInstanceState);\n        getWindow().setFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN, android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);\n        getWindow().getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY \| android.view.View.SYSTEM_UI_FLAG_FULLSCREEN \| android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION \| android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE \| android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN \| android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);|' $MAIN_ACTIVITY
 
       - name: Build APK
         run: |
