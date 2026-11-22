@@ -87,8 +87,6 @@ const openTarget=async target=>{
     } else {
       if (window.AndroidBridge && window.AndroidBridge.openApp) {
         window.AndroidBridge.openApp(target);
-      } else if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AppLauncher) {
-        await window.Capacitor.Plugins.AppLauncher.openUrl({ url: target });
       } else {
         window.location.href = "intent://#Intent;package=" + target + ";end";
       }
@@ -250,9 +248,12 @@ save("d",dim);
 renderWallpaper();
 play(bg,"bgin");
 }else{
-const index=findIndex(v);
-const element=apps[index]?list.children[index]:row;
-launch(apps[index]?apps[index].target:v,element);
+const index = findIndex(v);
+if(apps[index]){
+launch(apps[index].target,list.children[index]);
+} else {
+launch(v,row);
+}
 }
 };
 q.oninput=()=>play(arrow,"pulse");
